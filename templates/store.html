@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="UTF-8" /> <!-- linha 6 -->
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Minha Loja Online - Loja</title>
+  <style>
+    body {
+      background-color: #1f1f1f;
+      color: #eee;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 20px;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+    }
+
+    #storeContainer {
+      background-color: #2a2a2a;
+      width: 90%;
+      max-width: 800px;
+      border-radius: 12px;
+      padding: 30px 40px;
+      box-shadow: 0 0 15px rgba(255, 122, 24, 0.3);
+      display: flex;
+      flex-direction: column;
+      height: 90vh;
+      overflow-y: auto;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    header h2 {
+      color: #ff7a18;
+      font-size: 32px;
+      margin: 0;
+    }
+
+    header button {
+      background-color: #ff7a18;
+      border: none;
+      color: #fff;
+      font-weight: 600;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+      box-shadow: 0 4px 8px rgba(255, 122, 24, 0.5);
+      transition: background-color 0.3s ease;
+    }
+
+    header button:hover {
+      background-color: #e66d00;
+    }
+
+    h3 {
+      margin-top: 20px;
+      margin-bottom: 10px;
+      color: #ffae42;
+      border-bottom: 2px solid #ff7a18;
+      padding-bottom: 5px;
+      font-size: 24px;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      max-height: 200px;
+      overflow-y: auto;
+      margin-bottom: 20px;
+    }
+
+    li {
+      background-color: #3b3b3b;
+      margin: 8px 0;
+      padding: 15px 20px;
+      border-radius: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: inset 0 -3px 0 #ff7a18;
+      font-size: 18px;
+    }
+
+    li button {
+      margin: 0;
+      padding: 6px 14px;
+      font-size: 0.9rem;
+      border-radius: 6px;
+      background-color: #ff7a18;
+      border: none;
+      color: white;
+      cursor: pointer;
+      box-shadow: none;
+      transition: background-color 0.3s ease;
+    }
+
+    li button:hover {
+      background-color: #e66d00;
+    }
+
+    #cartMessage {
+      margin-top: 10px;
+      font-weight: 600;
+      text-align: center;
+      color: #ffae42;
+      min-height: 24px;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="storeContainer">
+    <header>
+      <h2>Minha Loja Online</h2>
+      <button onclick="logout()">Logout</button>
+    </header>
+
+    <h3>Produtos disponíveis</h3>
+    <ul id="productList"></ul>
+
+    <h3>Carrinho</h3>
+    <ul id="cartList"></ul>
+
+    <button onclick="checkout()">Finalizar Compra</button>
+    <p id="cartMessage"></p>
+  </div>
+
+  <script>
+    async function logout() {
+      await fetch('/logout', {
+        method: 'POST',
+        credentials: 'same-origin',
+      });
+      // Voltar para login
+      window.location.href = '/login';
+    }
+
+    async function loadProducts() {
+      try {
+        const res = await fetch('/api/products', { credentials: 'same-origin' });
+        if (!res.ok) throw new Error('Falha ao carregar produtos');
+        const products = await res.json();
+
+        const list = document.getElementById('productList');
+        list.innerHTML = '';
+        products.forEach((p) => {
+  const li = document.createElement('li');
+  li.textContent = `${p.name} - R$${p.price.toFixed(2)}`;
+
+  const btn = document.createElement('button');
+  btn.textContent = 'Adicionar ao carrinho';
+  btn.onclick = () => addToCart(p.id);
+
+  li.appendChild(btn);
+  list.appendChild(li);
+});
+      } catch {
+        alert('Erro ao carregar produtos.');
+      }
+    }
+
+    async function addToCart(productId) {
+      try {
+        const res = await fetch(`/api/cart/add/${productId}`, {
+  method: 'POST',
+  credentials: 'same-origin',
+});
+        if (res.ok) {
+          showMessage('Produto adicionado ao carrinho!');
+          loadCart();
+        } else {
+          alert('Erro ao adicionar produto.');
+        }
+      } catch {
+        alert('Erro ao adicionar produto.');
+      }
+    }
+
+    async function loadCart() {
+      try {
+        const res = await fetch('/api/cart', { credentials: 'same-origin' });
+        if (!res.ok) throw new Error();
+        const cartItems = await res.json();
+
+        const list = document.getElementById('cartList');
+        list.innerHTML = '';
+        cartItems.forEach((item) => {
+  const li = document.createElement('li');
+  li.textContent = `${item.product_name} - R$${item.product_price.toFixed(2)}`;
+
+  const btn = document.createElement('button');
+  btn.textContent = 'Remover';
+  btn.onclick = () => removeFromCart(item.product_id);
+
+  li.appendChild(btn);
+  list.appendChild(li);
+});
+      } catch {
+        alert('Erro ao carregar carrinho.');
+      }
+    }
+
+    async function removeFromCart(productId) {
+      try {
+        const res = await fetch(`/api/cart/remove/${productId}`, {
+  method: 'DELETE',
+  credentials: 'same-origin',
+});
+        if (res.ok) {
+          showMessage('Produto removido do carrinho!');
+          loadCart();
+        } else {
+          alert('Erro ao remover produto.');
+        }
+      } catch {
+        alert('Erro ao remover produto.');
+      }
+    }
+
+    async function checkout() {
+      try {
+        const res = await fetch('/api/cart/checkout', {
+          method: 'POST',
+          credentials: 'same-origin',
+        });
+        if (res.ok) {
+          showMessage('Compra finalizada com sucesso!');
+          loadCart();
+        } else {
+          alert('Erro no checkout.');
+        }
+      } catch {
+        alert('Erro no checkout.');
+      }
+    }
+
+    function showMessage(text) {
+      const el = document.getElementById('cartMessage');
+      el.textContent = text;
+      if (text) {
+        setTimeout(() => {
+          el.textContent = '';
+        }, 3500);
+      }
+    }
+
+    // Ao carregar a página, carrega produtos e carrinho
+    window.onload = () => {
+      loadProducts();
+      loadCart();
+    };
+  </script>
+</body>
+
+</html>

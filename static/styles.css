@@ -1,0 +1,85 @@
+/* Reset básico */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Fundo cinza escuro */
+body {
+    background-color: #1e1e1e;
+    color: #eee;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+/* Header */
+header {
+    background-color: #2d2d2d;
+    padding: 20px;
+    text-align: center;
+    border-bottom: 3px solid #f97316; /* laranja vibrante */
+}
+
+header h1 {
+    color: #f97316;
+    font-weight: 700;
+}
+
+/* Main */
+main {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px;
+}
+
+.welcome {
+    background-color: #292929;
+    padding: 30px 50px;
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(249, 115, 22, 0.5);
+    max-width: 500px;
+    text-align: center;
+}
+
+.welcome h2 {
+    color: #f97316;
+    margin-bottom: 15px;
+}
+
+.welcome p {
+    font-size: 1.1rem;
+    margin-bottom: 30px;
+    color: #ccc;
+}
+
+.btn-primary {
+    background-color: #f97316;
+    border: none;
+    padding: 15px 30px;
+    border-radius: 6px;
+    color: #1e1e1e;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.btn-primary:hover {
+    background-color: #e85c00;
+}
+
+/* Footer */
+footer {
+    background-color: #2d2d2d;
+    padding: 15px;
+    text-align: center;
+    border-top: 3px solid #f97316;
+    color: #888;
+    font-size: 0.9rem;
+}

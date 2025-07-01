@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Minha Loja Online - Login</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: #1f1f1f;
+      color: #eee;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .container {
+      width: 90%;
+      max-width: 1200px;
+      height: 700px;
+      background: linear-gradient(to right, #292929 50%, #1f1f1f 50%);
+      border-radius: 16px;
+      display: flex;
+      box-shadow: 0 0 20px rgba(255, 115, 0, 0.05);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .divider {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 50%;
+      width: 140px;
+      background: radial-gradient(circle at center, #ff7a18 10%, transparent 70%);
+      transform: translateX(-50%) rotate(-4deg);
+      opacity: 0.12;
+      pointer-events: none;
+    }
+
+    .left-panel {
+      flex: 1;
+      padding: 60px 80px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      background-color: transparent;
+      user-select: none;
+    }
+
+    .left-panel h1 {
+      font-size: 60px;
+      color: #ff7a18;
+      margin-bottom: 30px;
+    }
+
+    .left-panel p {
+      font-size: 22px;
+      line-height: 1.8;
+      color: #ccc;
+      white-space: pre-line;
+    }
+
+    .right-panel {
+      flex: 1;
+      padding: 40px 60px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: center;
+      background-color: transparent;
+      color: #eee;
+    }
+
+    form {
+      width: 100%;
+      max-width: 450px;
+      padding: 30px;
+      background-color: #2c2c2c;
+      border-radius: 12px;
+      box-shadow: 0 0 12px rgba(0, 0, 0, 0.2);
+      display: flex;
+      flex-direction: column;
+    }
+
+    label {
+      font-size: 16px;
+      color: #ff7a18;
+      margin-bottom: 8px;
+      margin-top: 16px;
+    }
+
+    input {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 8px;
+      background-color: #333;
+      color: white;
+      font-size: 16px;
+    }
+
+    button {
+      margin-top: 30px;
+      width: 100%;
+      padding: 16px;
+      background-color: #ff7a18;
+      border: none;
+      border-radius: 8px;
+      color: #fff;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 8px rgba(255, 122, 24, 0.5);
+    }
+
+    button:hover {
+      filter: brightness(75%);
+      transform: scale(1.02);
+    }
+
+    #message {
+      margin-top: 15px;
+      font-weight: 600;
+      text-align: center;
+      color: #ffae42;
+      min-height: 24px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="divider"></div>
+
+    <div class="left-panel">
+      <h1>Minha Loja Online</h1>
+      <p>
+        Bem-vindo(a) ao seu sistema de vendas!<br />
+        Explore nossos produtos, adicione ao carrinho<br />
+        e faça seu checkout com facilidade.
+      </p>
+    </div>
+
+    <div class="right-panel">
+      <form id="loginForm" action="/login" method="post">
+        <label for="username">Usuário</label>
+        <input type="text" id="username" name="username" autocomplete="username" required />
+
+        <label for="password">Senha</label>
+        <input type="password" id="password" name="password" autocomplete="current-password" required />
+
+        <button type="submit">Entrar</button>
+        <p id="message"></p>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const form = document.getElementById('loginForm');
+    const messageEl = document.getElementById('message');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      messageEl.textContent = '';
+
+      const username = form.username.value.trim();
+      const password = form.password.value.trim();
+
+      if (!username || !password) {
+        messageEl.textContent = 'Por favor, preencha usuário e senha.';
+        return;
+      }
+
+      try {
+        const res = await fetch('/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password }),
+          credentials: 'same-origin',
+        });
+
+        if (res.ok) {
+          // Redireciona para a página da loja ao login bem-sucedido
+          window.location.href = '/store';
+        } else {
+          messageEl.textContent = 'Usuário ou senha inválidos.';
+        }
+      } catch {
+        messageEl.textContent = 'Erro na conexão.';
+      }
+    });
+  </script>
+</body>
+
+</html>
